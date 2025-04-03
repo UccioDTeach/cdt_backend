@@ -1,11 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
-export  class Utenti {
-    @PrimaryGeneratedColumn()
-    id!: number;
-    @Column({})
-    email!: string
-    @Column({})
-    password!: string
+export class Utenti {
+  @PrimaryGeneratedColumn()
+  id!: number;
+  @Column({ unique: true })
+  email!: string;
+  @Column({})
+  password!: string;
 }

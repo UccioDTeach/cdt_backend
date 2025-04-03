@@ -17,7 +17,6 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
-// Aggiungi un nuovo utente
 export const addUser = async (req: Request, res: Response) => {
   const userRepository = getRepository(User);
   try {
