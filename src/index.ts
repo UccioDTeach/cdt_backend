@@ -9,7 +9,7 @@ import bodyParser from "body-parser";
 import cookieparser from "cookie-parser";
 
 const app = express();
-
+app.use(session({ secret: "Picone" }));
 // --- CONFIGURAZIONE CORS CORRETTA ---
 const corsOptions = {
   origin: "http://localhost:4200", // <-- METTI QUI L'URL ESATTO DEL TUO FRONTEND ANGULAR
@@ -22,7 +22,24 @@ app.use(cors(corsOptions)); // Usa le opzioni configurate
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieparser());
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.error("Errore intercettato:", err);
 
+    const status = err.status ?? 500;
+    const message = err.message ?? "Errore interno del server";
+
+    res.status(status).json({
+      status,
+      message,
+    });
+  }
+);
 // Inizializza la connessione al database
 createConnection()
   .then(() => {

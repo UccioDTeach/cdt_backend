@@ -7,12 +7,9 @@ import bcrypt from "bcrypt";
 
 declare module "express-session" {
   interface SessionData {
-    userId: number;
-    email?: string;
-    isLoggedIn?: boolean;
+    user: Utenti;
   }
 }
-
 
 export const getUtenti = async (req: Request, res: Response) => {
   const userRepository = getRepository(Utenti);
@@ -28,23 +25,27 @@ export const getUtenti = async (req: Request, res: Response) => {
   }
 };
 
-
 export const addUtente = async (req: Request, res: Response) => {
   const userRepository = getRepository(Utenti);
   try {
     const { password, ...userData } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = userRepository.create({ ...userData, password: hashedPassword });
+    const user = userRepository.create({
+      ...userData,
+      password: hashedPassword,
+    });
 
     const results = await userRepository.save(user);
-    const token = jwt.sign({ user: results }, env.jwtSecret, { expiresIn: "7d" });
-    res.cookie('token', token, {
+    const token = jwt.sign({ user: results }, env.jwtSecret, {
+      expiresIn: "7d",
+    });
+    res.cookie("token", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-      sameSite: 'strict',
+      path: "/",
+      sameSite: "lax",
     });
     res.status(201).json(results);
   } catch (error) {
@@ -55,8 +56,6 @@ export const addUtente = async (req: Request, res: Response) => {
     }
   }
 };
-
-
 
 export const accediUtente = async (req: Request, res: Response) => {
   const userRepository = getRepository(Utenti);
@@ -75,15 +74,15 @@ export const accediUtente = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign({ user }, env.jwtSecret, { expiresIn: "7d" });
-    res.cookie('token', token, {
+    res.cookie("token", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-      sameSite: 'strict',
+      path: "/",
+      sameSite: "lax",
     });
     res.status(200).json(user);
   } catch (err) {
-    if (err instanceof Error) { 
+    if (err instanceof Error) {
       res.status(500).send(err.message);
     }
   }

@@ -7,7 +7,9 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   const userRepository = getRepository(User);
   try {
-    const users = await userRepository.find();
+    const users = await userRepository.find({
+      where: { createdBy: { id: req.session.user?.id ?? -1 } },
+    });
     res.json(users);
   } catch (error) {
     if (error instanceof Error) {
@@ -21,6 +23,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const userRepository = getRepository(User);
   try {
+    console.log("Utente creato con successo:", req.body);
     const user = userRepository.create(req.body);
     const results = await userRepository.save(user);
     res.status(201).json(results);

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
 @Entity()
 export class User {
@@ -20,7 +20,7 @@ export class User {
   @Column()
   dataRilascio!: Date;
 
-  @Column({ unique: true })
+  @Column()
   codiceFiscale!: string;
 
   @Column()
@@ -34,5 +34,7 @@ export class User {
 
   @Column()
   codiceCertificato!: string;
+
+  @ManyToOne(() => User, (user) => user.id)
+  createdBy?: User | null;
 }
-  

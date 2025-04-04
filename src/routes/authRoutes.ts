@@ -2,6 +2,7 @@ import express, { RequestHandler } from "express";
 import { accediUtente, addUtente } from "../controller/utentiController";
 import jwt from "jsonwebtoken";
 import env from "../env";
+import session from "express-session";
 const authRouter = express.Router();
 
 export const authenticateToken: RequestHandler = (req, res, next) => {
@@ -10,7 +11,13 @@ export const authenticateToken: RequestHandler = (req, res, next) => {
   if (!token) return res.status(401).json({ error: "Token mancante" });
 
   try {
-    res.locals["user"] = jwt.verify(token, env.jwtSecret);
+    const decoded = jwt.verify(token, env.jwtSecret);
+    if (!decoded) return res.status(403).json({ error: "Token non valido" });
+    if (typeof decoded === "object" && "user" in decoded) {
+      req.session["user"] = decoded["user"];
+    } else {
+      return res.status(403).json({ error: "Token non valido" });
+    }
     return next();
   } catch (err) {
     return res.status(403).json({ error: "Token non valido o scaduto" });
@@ -26,6 +33,6 @@ authRouter.post("/logout", (_, res) => {
 });
 
 authRouter.get("/me", authenticateToken, (req, res) => {
-  res.status(200).json(res.locals["user"].user);
+  res.status(200).json(req.session["user"]);
 });
 export default authRouter;
