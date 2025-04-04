@@ -35,3 +35,4 @@ export class User {
   @Column()
   codiceCertificato!: string;
 }
+  

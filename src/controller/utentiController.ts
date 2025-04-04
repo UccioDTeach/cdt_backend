@@ -3,7 +3,7 @@ import { Utenti } from "../entity/utente";
 import { getRepository } from "typeorm";
 import jwt from "jsonwebtoken";
 import env from "../env";
-
+import bcrypt from "bcrypt";
 
 declare module "express-session" {
   interface SessionData {
@@ -32,14 +32,19 @@ export const getUtenti = async (req: Request, res: Response) => {
 export const addUtente = async (req: Request, res: Response) => {
   const userRepository = getRepository(Utenti);
   try {
-    const user = userRepository.create(req.body);
+    const { password, ...userData } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10); 
+
+    const user = userRepository.create({ ...userData, password: hashedPassword });
+
     const results = await userRepository.save(user);
-    const token = jwt.sign({user:results}, env.jwtSecret, { expiresIn: "7d" });
+    const token = jwt.sign({ user: results }, env.jwtSecret, { expiresIn: "7d" });
     res.cookie('token', token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
-      sameSite: 'strict', 
+      sameSite: 'strict',
     });
     res.status(201).json(results);
   } catch (error) {
@@ -55,23 +60,31 @@ export const addUtente = async (req: Request, res: Response) => {
 
 export const accediUtente = async (req: Request, res: Response) => {
   const userRepository = getRepository(Utenti);
-  try{
-    const { email, password } = req.body
+  try {
+    const { email, password } = req.body;
     const user = await userRepository.findOne({ where: { email: email, password: password } });
+
     if (!user) {
-      return res.status(401).json({ message: "Utente non trovato" }); 
+      return res.status(401).json({ message: "Utente non trovato" });
     }
-    const token = jwt.sign({user}, env.jwtSecret, { expiresIn: "7d" });
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Credenziali non valide" });
+    }
+
+    const token = jwt.sign({ user }, env.jwtSecret, { expiresIn: "7d" });
     res.cookie('token', token, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
       path: '/',
-      sameSite: 'strict', 
+      sameSite: 'strict',
     });
-    res.status(200).json(user)
-  }catch(err){
-    if(err instanceof Error){
-      res.status(500).send(err.message)
-    } 
+    res.status(200).json(user);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).send(err.message);
+    }
   }
-}
+};
