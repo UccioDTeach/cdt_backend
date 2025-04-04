@@ -62,7 +62,7 @@ export const accediUtente = async (req: Request, res: Response) => {
   const userRepository = getRepository(Utenti);
   try {
     const { email, password } = req.body;
-    const user = await userRepository.findOne({ where: { email: email, password: password } });
+    const user = await userRepository.findOne({ where: { email: email } });
 
     if (!user) {
       return res.status(401).json({ message: "Utente non trovato" });
@@ -83,7 +83,7 @@ export const accediUtente = async (req: Request, res: Response) => {
     });
     res.status(200).json(user);
   } catch (err) {
-    if (err instanceof Error) {
+    if (err instanceof Error) { 
       res.status(500).send(err.message);
     }
   }
