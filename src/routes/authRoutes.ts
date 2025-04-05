@@ -25,6 +25,7 @@ export const authenticateToken: RequestHandler = (req, res, next) => {
 };
 
 // rotta che vuoi in frontend
+
 authRouter.post("/register", addUtente);
 authRouter.post("/login", accediUtente);
 authRouter.post("/logout", (_, res) => {

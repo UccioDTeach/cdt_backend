@@ -1,16 +1,14 @@
 import express, { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import { User } from "../entity/User";
+import { Certificato } from "../entity/modelloCertificato";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const userRepository = getRepository(User);
+  const certsRepository = getRepository(Certificato);
   try {
-    const users = await userRepository.find({
-      where: { createdBy: { id: req.session.user?.id ?? -1 } },
-    });
-    res.json(users);
+    const certs = await certsRepository.find();
+    res.json(certs);
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).send(error.message);
@@ -21,23 +19,23 @@ router.get("/", async (req, res) => {
 });
 
 router.put("/:id", async (req: Request, res: Response) => {
-  const userRepository = getRepository(User);
+  const certsRepository = getRepository(Certificato);
   const { id } = req.params;
 
   try {
-    const user = await userRepository.findOne({
+    const cert = await certsRepository.findOne({
       where: { id: Number(id) },
     });
 
-    if (!user) {
-      return res.status(404).json({ message: "Utente non trovato" });
+    if (!cert) {
+      return res.status(404).json({ message: "Certificato non trovato" });
     }
 
-    userRepository.merge(user, req.body);
-    const updatedUser = await userRepository.save(user);
+    certsRepository.merge(cert, req.body);
+    const updatedUser = await certsRepository.save(cert);
 
     res.status(200).json({
-      message: "Utente aggiornato con successo",
+      message: "Certificato aggiornato con successo",
       user: updatedUser,
     });
   } catch (error) {
@@ -50,11 +48,11 @@ router.put("/:id", async (req: Request, res: Response) => {
 });
 
 router.post("/", async (req, res) => {
-  const userRepository = getRepository(User);
+  const certsRepository = getRepository(Certificato);
   try {
-    console.log("Utente creato con successo:", req.body);
-    const user = userRepository.create(req.body);
-    const results = await userRepository.save(user);
+    console.log("Certificato creato con successo:", req.body);
+    const cert = certsRepository.create(req.body);
+    const results = await certsRepository.save(cert);
     res.status(201).json(results);
   } catch (error) {
     if (error instanceof Error) {
@@ -66,22 +64,22 @@ router.post("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req: Request, res: Response) => {
-  const userRepository = getRepository(User);
+  const certsRepository = getRepository(Certificato);
   const { id } = req.params;
 
   try {
-    const deleteResult = await userRepository
+    const deleteResult = await certsRepository
       .createQueryBuilder()
       .delete()
-      .from(User)
+      .from(Certificato)
       .where("id = :id", { id: Number(id) })
       .execute();
 
     if (deleteResult.affected === 0) {
-      return res.status(404).json({ message: "Utente non trovato" });
+      return res.status(404).json({ message: "Certificato non trovato" });
     }
 
-    res.status(200).json({ message: "Utente eliminato con successo" });
+    res.status(200).json({ message: "Certificato eliminato con successo" });
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).send(error.message);

@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Utenti } from "./utente";
 
 @Entity()
 export class User {
@@ -36,5 +37,5 @@ export class User {
   codiceCertificato!: string;
 
   @ManyToOne(() => User, (user) => user.id)
-  createdBy?: User | null;
+  createdBy?: Utenti | null;
 }

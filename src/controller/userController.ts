@@ -53,7 +53,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   const userRepository = getRepository(User);
   try {
-    const userId = parseInt(req.params.id, 10); // Converti l'ID in numero
+    const userId = parseInt(req.params.id, 10);
     if (isNaN(userId)) {
       return res.status(400).send("ID non valido");
     }
