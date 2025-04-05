@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Utenti } from "./utente";
+  import { Utenti } from "./utente";
 
 @Entity()
 export class Certificato {

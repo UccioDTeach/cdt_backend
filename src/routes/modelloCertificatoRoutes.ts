@@ -2,9 +2,9 @@ import express, { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { Certificato } from "../entity/modelloCertificato";
 
-const router = express.Router();
+const Certrouter = express.Router();
 
-router.get("/", async (req, res) => {
+Certrouter.get("/", async (req, res) => {
   const certsRepository = getRepository(Certificato);
   try {
     const certs = await certsRepository.find();
@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req: Request, res: Response) => {
+Certrouter.put("/:id", async (req: Request, res: Response) => {
   const certsRepository = getRepository(Certificato);
   const { id } = req.params;
 
@@ -32,11 +32,11 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     certsRepository.merge(cert, req.body);
-    const updatedUser = await certsRepository.save(cert);
+    const updatedCert = await certsRepository.save(cert);
 
     res.status(200).json({
       message: "Certificato aggiornato con successo",
-      user: updatedUser,
+      cert: updatedCert,
     });
   } catch (error) {
     if (error instanceof Error) {
@@ -47,7 +47,7 @@ router.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/", async (req, res) => {
+Certrouter.post("/", async (req, res) => {
   const certsRepository = getRepository(Certificato);
   try {
     console.log("Certificato creato con successo:", req.body);
@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req: Request, res: Response) => {
+Certrouter.delete("/:id", async (req: Request, res: Response) => {
   const certsRepository = getRepository(Certificato);
   const { id } = req.params;
 
@@ -88,4 +88,4 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
   }
 });
-export default router;
+export default Certrouter;
