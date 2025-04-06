@@ -7,6 +7,7 @@ import session from "express-session";
 import authRouter from "./routes/authRoutes";
 import bodyParser from "body-parser";
 import cookieparser from "cookie-parser";
+import Certrouter from "./routes/modelloCertificatoRoutes";
 
 const app = express();
 app.use(session({ secret: "Picone" }));
@@ -46,6 +47,7 @@ createConnection()
     console.log("Connessione al database stabilita");
 
     app.use("/api/users", authenticateToken, userRoutes);
+    app.use("/api/certificati", authenticateToken, Certrouter);
     app.use("/auth", authRouter);
 
     // Avvia il server
