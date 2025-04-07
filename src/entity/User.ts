@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { Utenti } from "./utente";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+// Remove incorrect import if Utenti is not the creator based on FK error
+// import { Utenti } from "./utente";
 
-@Entity()
+@Entity('user') // Explicitly name table to match error message `cdt`.`user`
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -36,6 +37,17 @@ export class User {
   @Column()
   codiceCertificato!: string;
 
-  @ManyToOne(() => User, (user) => user.id)
-  createdBy?: Utenti | null;
+  // Self-referencing: A user created by another user. FK is createdById referencing User.id
+  @ManyToOne(() => User, user => user.createdUsers, { nullable: true, onDelete: 'SET NULL' }) // Setting FK column to NULL on delete
+  @JoinColumn({ name: 'createdById' }) // Specify the FK column name from the error
+  createdBy?: User | null;
+
+  // Explicitly define the FK column (optional but good practice with JoinColumn)
+  // Ensure this column exists in your 'user' table schema and allows NULLs.
+  @Column({ name: 'createdById', nullable: true })
+  createdById?: number | null;
+
+  // Inverse side: Users created by this user.
+  @OneToMany(() => User, user => user.createdBy)
+  createdUsers?: User[];
 }

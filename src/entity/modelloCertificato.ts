@@ -1,38 +1,51 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-  import { Utenti } from "./utente";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany } from "typeorm";
+import { Utenti } from "./utente";
 
-@Entity()
+@Entity('certificato')
 export class Certificato {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Certificato, (user) => user.id)
-  createdBy?: Utenti | null;
+  @Column()
+  dataEmissione!: Date;
+
+  @Column()
+  tipoCertificato!: string;
+
+  @Column()
+  filePDF!: string;
+
+  @ManyToOne(() => Certificato, cert => cert.derivedCertificates, { 
+    nullable: true, 
+    onDelete: 'SET NULL'
+  })
+  @JoinColumn({ name: 'createdById' })
+  createdBy?: Certificato | null;
+
+  @OneToMany(() => Certificato, cert => cert.createdBy)
+  derivedCertificates?: Certificato[];
 
   @Column({ nullable: true })
-  TipoCertificato!: string;
+  titolo?: string;
 
   @Column({ nullable: true })
-  titolo!: string;
+  siAttestaChe?: string;
 
   @Column({ nullable: true })
-  siAttestaChe!: string;
+  sottotitolo?: string;
 
   @Column({ nullable: true })
-  sottotitolo!: string;
+  luogoFormazione?: string;
 
   @Column({ nullable: true })
-  luogoFormazione!: string;
+  sottotitolo2?: string;
 
   @Column({ nullable: true })
-  sottotitolo2!: string;
+  carica1?: string;
 
   @Column({ nullable: true })
-  carica1!: string;
+  carica2?: string;
 
   @Column({ nullable: true })
-  carica2!: string;
-
-  @Column({ nullable: true })
-  carica3!: string;
+  carica3?: string;
 }
