@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { User } from "./User";
 
 @Entity()
 export class Utenti {
@@ -8,4 +9,7 @@ export class Utenti {
   email!: string;
   @Column({})
   password!: string;
+
+  @OneToMany(() => User, user => user.createdBy)
+  createdUsers?: User[];
 }
