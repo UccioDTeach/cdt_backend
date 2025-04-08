@@ -1,47 +1,60 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from "typeorm";
 import { Utenti } from "./utente";
 // import { Certificato } from "./modelloCertificato"; // No longer needed here
 
-@Entity('user')
+@Entity("user")
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ nullable: true })
   name!: string;
 
-  @Column()
+  @Column({ nullable: true })
   cognome!: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: "date", nullable: true })
   dataNascita!: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   codiceFiscale!: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   email!: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: "date", nullable: true })
   dataRilascio!: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: "date", nullable: true })
   validita!: string;
 
-  @Column()
+  @Column({ nullable: true })
   direttore!: string;
 
-  @Column()
+  @Column({ nullable: true })
   istruttore!: string;
 
-  @Column()
+  @Column({ nullable: true })
   codiceCertificato!: string;
 
-  @ManyToOne(() => Utenti, (utente) => utente.createdUsers, { nullable: true, onDelete: 'SET NULL' })
+  @Column({ nullable: true })
+  voto!: string;
+
+  @ManyToOne(() => Utenti, (utente) => utente.createdUsers, {
+    nullable: true,
+    onDelete: "SET NULL",
+  })
   @JoinColumn({ name: "createdById" })
   createdBy?: Utenti | null;
 
   // Explicitly define the FK column (if it exists and you want TypeORM to manage it)
-  @Column({ name: 'createdById', nullable: true })
+  @Column({ name: "createdById", nullable: true })
   createdById?: number | null;
 }
