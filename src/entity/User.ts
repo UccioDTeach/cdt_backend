@@ -1,9 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { Utenti } from "./utente";
-// Remove incorrect import if Utenti is not the creator based on FK error
-// import { Utenti } from "./utente";
+// import { Certificato } from "./modelloCertificato"; // No longer needed here
 
-@Entity('user') // Explicitly name table to match error message `cdt`.`user`
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -14,20 +13,20 @@ export class User {
   @Column()
   cognome!: string;
 
-  @Column()
-  email?: string;
+  @Column({ type: 'date' })
+  dataNascita!: string;
 
-  @Column()
-  dataNascita!: Date;
-
-  @Column()
-  dataRilascio!: Date;
-
-  @Column()
+  @Column({ unique: true })
   codiceFiscale!: string;
 
-  @Column()
-  validita!: Date;
+  @Column({ unique: true })
+  email!: string;
+
+  @Column({ type: 'date' })
+  dataRilascio!: string;
+
+  @Column({ type: 'date' })
+  validita!: string;
 
   @Column()
   direttore!: string;
@@ -38,16 +37,11 @@ export class User {
   @Column()
   codiceCertificato!: string;
 
-  // Self-referencing: A user created by another user. FK is createdById referencing User.id
-  @ManyToOne(() => Utenti, user => user.createdUsers, { nullable: true, onDelete: 'SET NULL' }) // Setting FK column to NULL on delete
-  @JoinColumn({ name: 'createdById' }) // Specify the FK column name from the error
+  @ManyToOne(() => Utenti, (utente) => utente.createdUsers, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: "createdById" })
   createdBy?: Utenti | null;
-  
-  // Explicitly define the FK column (optional but good practice with JoinColumn)
-  // Ensure this column exists in your 'user' table schema and allows NULLs.
+
+  // Explicitly define the FK column (if it exists and you want TypeORM to manage it)
   @Column({ name: 'createdById', nullable: true })
   createdById?: number | null;
-
-  // Inverse side: Users created by this user.
-
 }

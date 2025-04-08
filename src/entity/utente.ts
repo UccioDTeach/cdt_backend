@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { User } from "./User";
+import { Certificato } from "./modelloCertificato";
 
 @Entity()
 export class Utenti {
@@ -12,4 +13,7 @@ export class Utenti {
 
   @OneToMany(() => User, user => user.createdBy)
   createdUsers?: User[];
+
+  @OneToMany(() => Certificato, cert => cert.createdBy)
+  createdCertificates?: Certificato[];
 }

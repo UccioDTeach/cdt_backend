@@ -1,29 +1,21 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany } from "typeorm";
-import { Utenti } from "./utente";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm";
+import { Utenti as LoggedInUser } from "./utente";
 
 @Entity('certificato')
 export class Certificato {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  dataEmissione!: Date;
 
   @Column()
   tipoCertificato!: string;
 
-  @Column()
-  filePDF!: string;
-
-  @ManyToOne(() => Certificato, cert => cert.derivedCertificates, { 
-    nullable: true, 
-    onDelete: 'SET NULL'
+  @ManyToOne(() => LoggedInUser, user => user.createdCertificates, {
+    nullable: false,
+    onDelete: 'CASCADE'
   })
   @JoinColumn({ name: 'createdById' })
-  createdBy?: Certificato | null;
-
-  @OneToMany(() => Certificato, cert => cert.createdBy)
-  derivedCertificates?: Certificato[];
+  createdBy!: LoggedInUser;
 
   @Column({ nullable: true })
   titolo?: string;
