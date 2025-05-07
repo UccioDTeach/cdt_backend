@@ -82,10 +82,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const userRepository = queryRunner.manager.getRepository(User);
 
-    // Step 1: Update dependent users' createdById to NULL
     await userRepository.update({ createdById: userId }, { createdById: null });
 
-    // Step 2: Delete the target user
     const deleteResult = await userRepository.delete(userId);
 
     if (deleteResult.affected === 0) {
@@ -93,18 +91,20 @@ router.delete("/:id", async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Utente non trovato" });
     }
 
-    // Commit the transaction
     await queryRunner.commitTransaction();
     res.status(200).json({ message: "Utente eliminato con successo" });
   } catch (error) {
-    // Rollback transaction in case of errors
     await queryRunner.rollbackTransaction();
 
     console.error("Errore durante l'eliminazione dell'utente:", error);
     if (error instanceof Error) {
-      // Check if it's the specific foreign key constraint error
-      if (error.message.includes('FK_45c0d39d1f9ceeb56942db93cc5')) {
-        res.status(400).json({ message: "Impossibile eliminare l'utente: è referenziato da altri utenti." });
+      if (error.message.includes("FK_45c0d39d1f9ceeb56942db93cc5")) {
+        res
+          .status(400)
+          .json({
+            message:
+              "Impossibile eliminare l'utente: è referenziato da altri utenti.",
+          });
       } else {
         res.status(500).send(error.message);
       }
@@ -112,7 +112,6 @@ router.delete("/:id", async (req: Request, res: Response) => {
       res.status(500).send("Errore sconosciuto durante l'eliminazione");
     }
   } finally {
-    // Release the query runner
     await queryRunner.release();
   }
 });

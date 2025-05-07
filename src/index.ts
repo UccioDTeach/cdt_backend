@@ -11,15 +11,13 @@ import Certrouter from "./routes/modelloCertificatoRoutes";
 
 const app = express();
 app.use(session({ secret: "Picone" }));
-// --- CONFIGURAZIONE CORS CORRETTA ---
 const corsOptions = {
-  origin: "http://localhost:4200", // <-- METTI QUI L'URL ESATTO DEL TUO FRONTEND ANGULAR
-  credentials: true, // <-- FONDAMENTALE: Permette al browser di inviare/ricevere cookie
-  optionsSuccessStatus: 200, // Necessario per alcuni browser/versioni
+  origin: "http://localhost:4200",
+  credentials: true,
+  optionsSuccessStatus: 200,
 };
-app.use(cors(corsOptions)); // Usa le opzioni configurate
+app.use(cors(corsOptions));
 
-// Middleware per il parsing del body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieparser());
@@ -41,7 +39,6 @@ app.use(
     });
   }
 );
-// Inizializza la connessione al database
 createConnection()
   .then(() => {
     console.log("Connessione al database stabilita");
@@ -50,14 +47,13 @@ createConnection()
     app.use("/api/certificati", authenticateToken, Certrouter);
     app.use("/auth", authRouter);
 
-    // Avvia il server
     app.listen(3000, () => {
       console.log("Server in ascolto sulla porta 3000");
-      if (process.env.NODE_ENV !== "production") {
-        console.warn(
-          "ATTENZIONE: Cookie NON impostato su secure=true (solo per sviluppo)"
-        );
-      }
+      // if (process.env.NODE_ENV !== "production") {
+      //   console.warn(
+      //     "ATTENZIONE: Cookie NON impostato su secure=true (solo per sviluppo)"
+      //   );
+      // }
     });
   })
   .catch((error) => {

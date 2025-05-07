@@ -1,13 +1,11 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
-  OneToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { Utenti } from "./utente";
-// import { Certificato } from "./modelloCertificato"; // No longer needed here
 
 @Entity("user")
 export class User {

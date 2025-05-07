@@ -7,7 +7,9 @@ const Certrouter = express.Router();
 Certrouter.get("/", async (req, res) => {
   const certsRepository = getRepository(Certificato);
   try {
-    const certs = await certsRepository.find();
+    const certs = await certsRepository.find({
+      where: { createdBy: { id: req.session.user?.id ?? -1 } },
+    });
     res.json(certs);
   } catch (error) {
     if (error instanceof Error) {

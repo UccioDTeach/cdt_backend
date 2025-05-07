@@ -1,8 +1,7 @@
 import express, { RequestHandler } from "express";
-import { accediUtente, addUtente } from "../controller/utentiController";
 import jwt from "jsonwebtoken";
+import { accediUtente, addUtente } from "../controller/utentiController";
 import env from "../env";
-import session from "express-session";
 const authRouter = express.Router();
 
 export const authenticateToken: RequestHandler = (req, res, next) => {
@@ -23,8 +22,6 @@ export const authenticateToken: RequestHandler = (req, res, next) => {
     return res.status(403).json({ error: "Token non valido o scaduto" });
   }
 };
-
-// rotta che vuoi in frontend
 
 authRouter.post("/register", addUtente);
 authRouter.post("/login", accediUtente);
